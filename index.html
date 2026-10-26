@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Token Rider</title>
+<meta name="description" content="5 levels, 5 bosses, 5 rewards. Beat the bosses to unlock the top Claude skills on GitHub and the prompt of the whole game. Plays in your browser.">
+<meta property="og:title" content="Token Rider">
+<meta property="og:description" content="5 levels. 5 bosses. Each one unlocks a top Claude skill from GitHub. The last one drops the prompt of the whole game.">
+<meta property="og:image" content="https://tetriss22.github.io/token-rider/cover.png">
+<meta property="og:url" content="https://tetriss22.github.io/token-rider/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Token Rider">
+<meta name="twitter:description" content="5 levels. 5 bosses. Each one unlocks a top Claude skill from GitHub. The last one drops the prompt of the whole game.">
+<meta name="twitter:image" content="https://tetriss22.github.io/token-rider/cover.png">
+<meta name="theme-color" content="#2b1b4a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#ff7a2f;--acc2:#ffb347;--ink:#fff7ee;--glass:rgba(22,12,38,.74);--line:rgba(255,190,140,.28);--r1:#ff7a2f;--r2:#ffd36b;--vig:rgba(40,10,50,.55)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#2b1b4a;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-user-select:none;user-select:none;touch-action:none}
+canvas{display:block;width:100vw;height:100vh;height:100dvh}
+.t{font-family:Bungee,Impact,system-ui,sans-serif;letter-spacing:.02em}
+#vign{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 120% 90% at 50% 45%,transparent 55%,var(--vig))}
+#flash{position:fixed;inset:0;background:radial-gradient(circle,transparent 40%,rgba(255,40,60,.55));opacity:0;pointer-events:none}
+#bolt{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;mix-blend-mode:overlay}
+#hud{position:fixed;inset:0;pointer-events:none;padding:max(12px,env(safe-area-inset-top)) 14px 14px;display:none}
+#hud.on{display:block}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pill{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:8px 12px;font-weight:800;font-size:18px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);white-space:nowrap}
+.pill .dia{color:var(--acc)}
+#hearts{color:#ff4d6d;letter-spacing:2px}
+#mid{flex:1;max-width:420px;text-align:center;min-width:0}
+#barlab{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.95;margin-bottom:5px;text-shadow:0 1px 3px #000a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bar{height:10px;border-radius:8px;background:rgba(0,0,0,.35);border:1px solid var(--line);overflow:hidden}
+#fill{height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:8px;transition:width .15s}
+#bar.boss #fill{background:linear-gradient(90deg,#ff4d6d,#ff2a2a)}
+#mute{pointer-events:auto;cursor:pointer;margin-left:8px}
+#right{display:flex;align-items:center}
+#jumpBtn{position:fixed;left:50%;bottom:max(22px,env(safe-area-inset-bottom));transform:translateX(-50%);width:84px;height:84px;border-radius:50%;border:2px solid rgba(255,220,180,.6);background:rgba(255,122,47,.28);color:#fff;font:400 15px Bungee,system-ui;display:none;align-items:center;justify-content:center;pointer-events:auto;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#jumpBtn.on{display:flex}
+#jumpBtn:active{background:rgba(255,122,47,.6)}
+#banner{position:fixed;left:0;right:0;top:26%;text-align:center;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;transform:scale(.9);text-shadow:0 3px 0 #1a1023,0 0 24px rgba(255,80,60,.6);padding:0 12px}
+#banner.on{opacity:1;transform:scale(1)}
+#banner .big{font-size:clamp(28px,7vw,64px);color:#fff}
+#banner .small{font-weight:800;font-size:clamp(13px,2.6vw,18px);margin-top:6px;color:var(--acc2);letter-spacing:.08em}
+#hint{position:fixed;bottom:max(120px,calc(env(safe-area-inset-bottom) + 120px));left:0;right:0;text-align:center;font-weight:800;font-size:15px;pointer-events:none;text-shadow:0 2px 4px #000c;transition:opacity .6s;opacity:0;padding:0 16px}
+.ov{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at center,rgba(20,8,36,.3),rgba(20,8,36,.84))}
+.ov.on{display:flex}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:26px 24px;max-width:480px;width:100%;text-align:center;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:calc(100dvh - 36px);overflow:auto}
+h1.t{font-size:clamp(40px,10vw,64px);line-height:.95;color:#fff;text-shadow:0 4px 0 var(--acc),0 8px 0 #1a1023}
+.sub{margin:14px 0 4px;font-size:16px;line-height:1.45;font-weight:600}
+.sub2{font-size:14px;opacity:.85;line-height:1.45}
+.btn{pointer-events:auto;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:14px 26px;font:800 17px Inter,system-ui,sans-serif;color:#1a1023;background:linear-gradient(180deg,#ffc27a,var(--acc));box-shadow:0 5px 0 #b24d14,0 10px 24px rgba(255,122,47,.35);text-decoration:none;transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #b24d14}
+.btn.ghost{background:rgba(255,255,255,.08);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.big{font-size:20px;padding:16px 36px;margin-top:18px}
+.ctrl{margin-top:16px;font-size:12.5px;opacity:.75;line-height:1.5}
+.credit{margin-top:10px;font-size:12px;opacity:.65}
+.credit a{color:var(--acc2)}
+#map{display:flex;justify-content:center;gap:6px;margin:20px 0 4px;position:relative}
+.node{flex:1;max-width:84px;cursor:pointer;pointer-events:auto;text-align:center}
+.node .dot{width:46px;height:46px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 18px Bungee,system-ui;border:2px solid var(--line);background:rgba(0,0,0,.3);position:relative}
+.node .nm{font-size:10.5px;font-weight:800;letter-spacing:.04em;margin-top:6px;opacity:.85;line-height:1.2;text-transform:uppercase}
+.node.locked{cursor:default;opacity:.45}
+.node.open .dot{background:linear-gradient(180deg,#ffc27a,var(--acc));color:#1a1023;border-color:#ffe0b0;box-shadow:0 0 22px rgba(255,140,60,.7);animation:pulse 1.4s infinite}
+.node.done .dot{background:rgba(255,179,71,.18);border-color:var(--acc2);color:var(--acc2)}
+.chip{display:inline-block;margin-top:5px;font:800 9.5px Inter,system-ui;letter-spacing:.08em;padding:3px 6px;border-radius:6px;background:var(--acc2);color:#1a1023;cursor:pointer}
+.node.locked .chip{background:rgba(255,255,255,.12);color:var(--ink)}
+@keyframes pulse{50%{opacity:.6}}
+#over h1{font-size:clamp(54px,14vw,96px);color:#ff4d6d;text-shadow:0 5px 0 #1a1023;word-break:break-all}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.acts .btn{flex:1 1 140px;padding:13px 14px;font-size:15px}
+/* drop */
+#drop .loot{cursor:pointer;pointer-events:auto;width:min(310px,84vw);padding:24px 20px 22px;border-radius:22px;text-align:center;border:3px solid transparent;background:linear-gradient(160deg,#2c1640,#140920) padding-box,conic-gradient(from var(--a,0deg),var(--r1),var(--r2),#fff,var(--r1)) border-box;animation:pop .6s cubic-bezier(.2,1.6,.4,1) both,spin 2.2s linear infinite,glow 1.4s ease-in-out infinite}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+@keyframes glow{0%,100%{box-shadow:0 0 50px color-mix(in srgb,var(--r1) 55%,transparent)}50%{box-shadow:0 0 95px color-mix(in srgb,var(--r1) 85%,transparent)}}
+@keyframes pop{from{transform:scale(.2) rotate(-12deg);opacity:0}}
+@keyframes float{50%{transform:translateY(-8px) rotate(45deg)}}
+.clr{font:400 13px Bungee,system-ui;letter-spacing:.06em;color:#fff;opacity:.9}
+.rar{font:800 12px Inter,system-ui;letter-spacing:.22em;color:var(--r2);margin-top:6px}
+.gem{width:92px;height:92px;margin:16px auto 14px;border-radius:24px;transform:rotate(45deg);background:linear-gradient(135deg,#fff,var(--r2) 30%,var(--r1) 75%);box-shadow:0 0 40px var(--r1),inset 0 0 0 3px rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;animation:float 2s ease-in-out infinite}
+.gem span{transform:rotate(-45deg);font:400 26px Bungee,system-ui;color:#1a1023}
+.gem.sm{width:56px;height:56px;margin:0;border-radius:16px;animation:none;flex:none;transform:rotate(45deg)}
+.gem.sm span{font-size:16px}
+.lname{font:400 20px Bungee,system-ui;color:#fff;word-break:break-word}
+.ltype{font-size:13px;opacity:.8;margin-top:4px}
+.tap{margin-top:14px;font-weight:800;font-size:14px;color:var(--r2);animation:pulse 1.2s infinite}
+#modal .card{text-align:left;-webkit-user-select:text;user-select:text}
+.mh{display:flex;gap:16px;align-items:center;margin-bottom:12px}
+.tag{display:inline-block;font:800 11px Inter,system-ui;letter-spacing:.14em;color:#1a1023;background:var(--r2);border-radius:6px;padding:3px 7px;margin-top:6px}
+.desc{font-size:15px;line-height:1.5;margin-bottom:10px}
+.lst{list-style:none;margin:0 0 10px}
+.lst li{font-size:14px;line-height:1.45;padding:5px 0 5px 22px;position:relative;border-top:1px solid rgba(255,255,255,.06)}
+.lst li::before{content:"◆";position:absolute;left:2px;color:var(--r1);font-size:11px;top:8px}
+pre#ptext{white-space:pre-wrap;word-break:break-word;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:12px;max-height:34vh;overflow:auto;margin-bottom:6px}
+.stats{display:flex;gap:8px;margin:8px 0 2px}
+.stats div{flex:1;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.stats b{display:block;font:400 19px Bungee,system-ui;letter-spacing:0;text-transform:none;color:#fff;margin-bottom:2px}
+.inst{font-size:12px;opacity:.7;margin-top:12px;line-height:1.45}
+code{font-family:ui-monospace,Menlo,monospace;background:rgba(255,255,255,.08);padding:1px 5px;border-radius:5px}
+@media (max-width:520px){.pill{font-size:15px;padding:7px 9px}#barlab{font-size:9.5px}.node .dot{width:40px;height:40px;font-size:15px}.node .nm{font-size:9px}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="vign"></div>
+<div id="flash"></div>
+<div id="bolt"></div>
+
+<div id="hud">
+  <div class="row">
+    <div class="pill"><span class="dia">◆</span> <span id="tok">0</span></div>
+    <div id="mid"><div id="barlab"></div><div id="bar"><div id="fill"></div></div></div>
+    <div id="right"><div class="pill" id="hearts">♥♥♥</div><div class="pill" id="mute" title="Sound">🔊</div></div>
+  </div>
+</div>
+<button id="jumpBtn">JUMP</button>
+<div id="banner"><div class="big t" id="bBig"></div><div class="small" id="bSmall"></div></div>
+<div id="hint"></div>
+
+<div class="ov on" id="menu">
+  <div class="card">
+    <h1 class="t">TOKEN<br>RIDER</h1>
+    <p class="sub">5 levels. 5 bosses. 5 rewards.</p>
+    <p class="sub2">Every boss unlocks one of the most-starred Claude skills on GitHub.<br>The last one drops the prompt of this whole game.</p>
+    <div id="map"></div>
+    <button class="btn big" id="go">RIDE ▶</button>
+    <p class="ctrl">← → / A D steer · Space / ↑ jump<br>Phone: hold the left or right side to steer, tap JUMP or swipe up</p>
+    <p class="credit">Built with Claude + three.js · by <a href="https://x.com/Tetriss112" target="_blank" rel="noopener">@Tetriss112</a></p>
+  </div>
+</div>
+
+<div class="ov" id="over">
+  <div class="card">
+    <h1 class="t" id="overCode">429</h1>
+    <p class="sub" id="overSub">Rate limited.</p>
+    <p class="sub2" id="overTxt"></p>
+    <div class="acts"><button class="btn" id="retry">TRY AGAIN ↻</button><button class="btn ghost" id="toMenu">Levels</button></div>
+  </div>
+</div>
+
+<div class="ov" id="drop">
+  <div class="loot" id="lootCard">
+    <div class="clr" id="dClr">LEVEL 1 CLEAR</div>
+    <div class="rar" id="dRar">RARE DROP</div>
+    <div class="gem"><span id="dGlyph">&gt;_</span></div>
+    <div class="lname" id="dName"></div>
+    <div class="ltype" id="dType"></div>
+    <div class="tap">TAP TO OPEN</div>
+  </div>
+</div>
+
+<div class="ov" id="modal">
+  <div class="card">
+    <div class="mh">
+      <div class="gem sm"><span id="mGlyph">&gt;_</span></div>
+      <div><div class="lname" id="mName"></div><span class="tag" id="mTag"></span></div>
+    </div>
+    <p class="desc" id="mDesc"></p>
+    <ul class="lst" id="mList"></ul>
+    <pre id="ptext"></pre>
+    <div class="stats" id="mStats">
+      <div><b id="sTok">0</b>tokens</div>
+      <div><b id="sTime">0:00</b>time</div>
+      <div><b id="sHit">0</b>hits taken</div>
+    </div>
+    <div class="acts">
+      <a class="btn" id="mMain" href="#">⬇ Download</a>
+      <a class="btn ghost" id="mAlt" href="#" download>⬇ .txt</a>
+    </div>
+    <div class="acts">
+      <button class="btn" id="mNext">NEXT LEVEL ▶</button>
+      <a class="btn ghost" id="share" href="#" target="_blank" rel="noopener">Share on X</a>
+      <button class="btn ghost" id="mClose">Close</button>
+    </div>
+    <p class="inst" id="mInst"></p>
+  </div>
+</div>
+
+<script src="three.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

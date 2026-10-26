@@ -1,0 +1,49 @@
+TOKEN RIDER: THE FULL PROMPT
+This is the prompt for the whole game you just beat. Paste it into Claude. Change anything in [brackets] to make your own version.
+
+---
+
+Build a 3D browser game called [Token Rider]. It must run from one index.html file plus three.js r149 (three.min.js next to it), with no build step, no external models and no image files: everything is drawn in code. A stranger should open the link and be playing within 2 seconds on a phone or a laptop.
+
+STYLE
+Anime cel-shaded look, like a golden-hour anime opening:
+- MeshToonMaterial with a 3-step gradient map, a rim light added with onBeforeCompile, inverted-hull black outlines on characters and props.
+- A gradient sky dome shader with a sun disc and glow, canvas-drawn cumulus clouds as sprites, far mountains with snow caps.
+- Rolling hills built from terrain chunks that stay flat near the road, instanced grass tufts and flowers, fences along the road.
+- Ambient particles per world, speed lines at high speed, blob shadows, a soft vignette.
+- Fonts: Bungee for titles, Inter for UI. Glassy dark UI panels with orange accents.
+
+PLAYER
+A girl courier on a white-and-orange hoverbike: helmet with a dark visor, blue jacket, ponytail, a red scarf that flutters in two segments, twin engine flames, a cyan glow ring under the bike. Third-person camera behind and above, the bike leans when steering and tilts on jumps.
+
+CONTROLS
+Auto-forward. Steer with arrows or A/D, jump with Space/W/↑. On phones: hold the left or right half of the screen to steer, a round JUMP button and swipe up to jump.
+
+CORE LOOP
+Collect orange tokens that form curvy lines. Avoid purple bugs. 3 hearts per level (up to 5), heart pickups on the road (2 on level 1, up to 5 on level 5) and during boss fights from level 2, short invulnerability after a hit, screen shake and a red flash. Progress bar to the boss.
+
+5 LEVELS, each a new world, one new surprise, its own boss and reward:
+1. [Golden Meadow] sunset, pines, fences, pollen. New: hoppers (green bugs whose eyes flash red, then leap into your lane). Boss: RATE LIMIT GOLEM, chest says 429, throws boulders with red landing circles. Reward: a top skill.
+2. [Sakura Hills] pink trees, stone lanterns, falling petals. New: low walls you must jump (an arc of tokens over each), fake tokens that flicker purple and hurt. Boss: HALLUCINATION GOLEM, crystal spikes, "???" on the chest, adds red spiked trap rings. Reward: a top skill.
+3. [Copper Canyon] desert mesas, cacti, dust. New: gates with a moving gap, meteors with growing red shadows. Boss: TIMEOUT TITAN, 504, adds ground shockwaves to jump over. Reward: a top skill.
+4. [Neon Night] stars, neon lamps, glowing crystals, fireflies, dark road with neon lines. New: drones sweeping side to side. Boss: NULL POINTER KNIGHT, glowing visor, moving rings. Reward: a top skill.
+5. [Storm Summit] red storm sky, lightning flashes, dead trees, lava cracks, embers. Everything at once, faster. Boss: CONTEXT LIMIT TITAN, 200K on the chest, 5 HP, all attacks. Reward: this prompt.
+Show a one-line hint the first time each new obstacle appears. Keep a cooldown between special obstacles so rows are always passable.
+
+BOSS FIGHT
+The boss rises from the ground with a title banner, stays 60 units ahead and attacks on a timer. Orange rings appear between you and the boss; riding through one fires a beam that removes 1 HP. Attack rate grows as HP drops. On defeat the boss breaks apart, a glowing loot crystal falls with a light pillar, then a reward card pops up.
+
+REWARDS
+Card with rarity (RARE blue, EPIC purple, LEGENDARY orange), animated glowing border, "tap to open". The modal shows the reward (for a prompt: text box, Copy button, .txt download), run stats (tokens, time, hits), Next level and Share on X buttons. Levels 1-4 unlock [the most-starred Claude skills on GitHub]: the card shows the repo name, star count, what it does and its install command, with "Open on GitHub" and "Copy install" buttons. Level 5 unlocks this prompt (stored in rewards/token-rider-prompt.txt).
+
+MENU AND PROGRESS
+Start screen: big title, "5 levels. 5 bosses. 5 rewards.", a level map with 5 nodes (locked, open, cleared), reward chips on cleared levels to reopen rewards, a RIDE button. Save progress in localStorage (wrapped in try/catch). Game over screen shows the boss error code, where you crashed and Try again / Levels buttons.
+
+SOUND
+Web Audio only: chiptune music from a 16-step scheduler with different chords and tempo per level and a faster boss theme; sound effects for tokens, hits, jumps, rings, boss hits, thunder, win fanfare. Mute button saved in localStorage.
+
+TESTING
+Add URL flags: ?level=N, ?boss, ?win, ?auto (autopilot that steers, dodges and jumps) and ?test (window.__step(n) advances the game n frames). Use them with headless Chromium to play every level, confirm each can be won and lost, and screenshot every world on desktop and phone sizes before shipping.
+
+SHIP
+Public GitHub repo with GitHub Pages from main, og:image and twitter:card summary_large_image with a 1200x630 cover screenshot, credit line "[Built with Claude + three.js · by @you]".
